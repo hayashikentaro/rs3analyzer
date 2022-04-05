@@ -107,4 +107,4 @@ const getChar = (buf, bufIndex) => {
 
 const offcet = 0x3d0000;
 
-dump(offcet, getChar);
+dump(offcet, 10, getChar);
