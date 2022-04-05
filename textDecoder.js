@@ -1,3 +1,4 @@
+import {readRom} from "./util.js";
 
 /* ロマンシング サ・ガ3の文字コード表(シングルバイト) */
 const getChar = (buf, bufIndex) => {
@@ -106,9 +107,10 @@ const getChar = (buf, bufIndex) => {
 
 const txt_offcet = 0x3d0000;
 
-var fs = require('fs');
-fs.readFile('rom', function(err, content){
-    for(let i=0; i < 60000; i++) {
-        console.log((txt_offcet + i).toString(16) + " : " + getChar(content, txt_offcet + i));
-    }
-});
+readRom((content) => {
+        for (let i = 0; i < 100; i++) {
+            console.log((txt_offcet + i).toString(16) + " : " + getChar(content, txt_offcet + i));
+        }
+    },
+    txt_offcet,
+);
