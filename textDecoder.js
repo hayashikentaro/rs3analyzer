@@ -1,7 +1,7 @@
 
 /* ロマンシング サ・ガ3の文字コード表(シングルバイト) */
 const getChar = (buf, bufIndex) => {
-    if (buf[bufIndex - 1] > 31 && buf[bufIndex - 1] < 36) return "";
+    if (buf[bufIndex - 1] < 36) return "";
     if (buf[bufIndex] == 32) {
         return [
             /* 0x20 */
@@ -108,7 +108,7 @@ const txt_offcet = 0x3d0000;
 
 var fs = require('fs');
 fs.readFile('rom', function(err, content){
-    for(let i=0; i < 100000; i++) {
+    for(let i=0; i < 10000; i++) {
         process.stdout.write(getChar(content, txt_offcet + i));
     }
 });
