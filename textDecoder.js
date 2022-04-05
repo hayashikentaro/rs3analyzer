@@ -108,7 +108,7 @@ const txt_offcet = 0x3d0000;
 
 var fs = require('fs');
 fs.readFile('rom', function(err, content){
-    for(let i=0; i < 10000; i++) {
-        process.stdout.write(getChar(content, txt_offcet + i));
+    for(let i=0; i < 60000; i++) {
+        console.log((txt_offcet + i).toString(16) + " : " + getChar(content, txt_offcet + i));
     }
 });
