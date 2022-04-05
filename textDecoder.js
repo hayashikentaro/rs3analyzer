@@ -105,12 +105,6 @@ const getChar = (buf, bufIndex) => {
     }
 }
 
-const txt_offcet = 0x3d0000;
+const offcet = 0x3d0000;
 
-dump((content) => {
-        for (let i = 0; i < 100; i++) {
-            console.log((txt_offcet + i).toString(16) + " : " + getChar(content, txt_offcet + i));
-        }
-    },
-    txt_offcet,
-);
+dump(offcet, getChar);
