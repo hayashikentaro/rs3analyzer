@@ -1,9 +1,9 @@
-import {readRom} from "./util.js";
+import {dump} from "./util.js";
 
 /* ロマンシング サ・ガ3の文字コード表(シングルバイト) */
 const getChar = (buf, bufIndex) => {
     if (buf[bufIndex - 1] < 36) return "";
-    if (buf[bufIndex] == 32) {
+    if (buf[bufIndex] === 32) {
         return [
             /* 0x20 */
             " ", "あ", "い", "う", "え", "お", "か", "き", "く", "け", "こ", "さ", "し", "す", "せ", "そ",
@@ -23,7 +23,7 @@ const getChar = (buf, bufIndex) => {
             "連", "敵", "団", "報", "当", "残", "合", "情", "命", "心", "下", "部", "聞", "勝", "界", "頼",
             "作", "体", "休", "戻", "西", "生", "船", "場", "良", "最", "備", "度", "帰", "立", "近", "丈",
         ][buf[bufIndex + 1]];
-    } if (buf[bufIndex] == 33) {
+    } if (buf[bufIndex] === 33) {
             return [
             /* 0x21 */
             "万", "兵", "逃", "夫", "侯", "元", "名", "破", "売", "食", "怪", "少", "々", "年", "公", "配",
@@ -43,7 +43,7 @@ const getChar = (buf, bufIndex) => {
             "却", "奪", "終", "具", "腕", "白", "草", "盾", "太", "馬", "段", "斬", "血", "相", "主", "花",
             "性", "抜", "酒", "造", "門", "官", "絶", "減", "令", "次", "数", "続", "位", "収", "信", "砂",
             ][buf[bufIndex + 1]];
-    } if (buf[bufIndex] == 34) {
+    } if (buf[bufIndex] === 34) {
         return [
             /* 0x22 */
             "封", "野", "波", "盟", "素", "向", "巣", "正", "風", "料", "与", "面", "文", "滅", "土", "在",
@@ -63,7 +63,7 @@ const getChar = (buf, bufIndex) => {
             "掛", "音", "救", "印", "久", "朱", "優", "像", "古", "値", "妻", "研", "究", "晶", "猛", "嵐",
             "河", "静", "激", "利", "稲", "砕", "温", "革", "環", "蛇", "雨", "電", "爆", "両", "羊", "陶",
         ][buf[bufIndex + 1]];
-    } if (buf[bufIndex] == 35) {
+    } if (buf[bufIndex] === 35) {
         return [
             /* 0x23 */
             "0",  "1",  "2",  "3",  "4",  "5",  "6",  "7",  "8",  "9",  "H",  "L",  "P" , "/",  "←", ":",
@@ -107,7 +107,7 @@ const getChar = (buf, bufIndex) => {
 
 const txt_offcet = 0x3d0000;
 
-readRom((content) => {
+dump((content) => {
         for (let i = 0; i < 100; i++) {
             console.log((txt_offcet + i).toString(16) + " : " + getChar(content, txt_offcet + i));
         }
