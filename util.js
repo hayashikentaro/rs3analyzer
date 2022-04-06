@@ -13,6 +13,6 @@ const dump = (offset, size, output, converter) => {
     })
 };
 
-export const dumpEveryByte = (offset, size, converter) => {
+export const dumpEveryByte = ({offset, size, converter}) => {
     dump(offset, size, outputEveryByte, converter);
 };

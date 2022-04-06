@@ -107,4 +107,4 @@ const getChar = (buf, bufIndex) => {
 
 const offcet = 0x3d0000;
 
-dumpEveryByte(offcet, 10, getChar);
+dumpEveryByte({offset: offcet, size: 10, converter: getChar});
