@@ -3,5 +3,6 @@
   "name": "rs3analyzer",
   "version": "1.0.0",
   "dependencies": {
+    "sugar": "^2.0.6"
   }
 }
