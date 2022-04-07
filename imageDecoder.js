@@ -8,24 +8,25 @@ const r3pBodyOffset = 0x0036;
 const bitNumPerByte = 8;
 
 const getRGB = (paletteIndex) => {
+    // リトルエンディアンのため反転
     return [
-        [ 0x48, 0x40, 0xA8 ],
-        [ 0x70, 0x70, 0xD8 ],
-        [ 0xB8, 0xC0, 0xF8 ],
-        [ 0x28, 0x68, 0x10 ],
-        [ 0x60, 0xA0, 0x38 ],
-        [ 0xA0, 0xD8, 0x60 ],
-        [ 0xF0, 0xF0, 0xD0 ],
-        [ 0xF8, 0xD0, 0x90 ],
-        [ 0x90, 0x80, 0x68 ],
-        [ 0xB0, 0x68, 0x20 ],
-        [ 0xE8, 0x98, 0x48 ],
-        [ 0xF0, 0x68, 0x30 ],
-        [ 0xC8, 0x48, 0x28 ],
-        [ 0x90, 0x30, 0x20 ],
-        [ 0x30, 0x30, 0x30 ],
-        [ 0x01, 0x01, 0x01 ],
-        [ 0xFF, 0xFF, 0xFF ],
+        [ 0xFF, 0x48, 0x40, 0xA8 ],
+        [ 0xFF, 0x70, 0x70, 0xD8 ],
+        [ 0xFF, 0xB8, 0xC0, 0xF8 ],
+        [ 0xFF, 0x28, 0x68, 0x10 ],
+        [ 0xFF, 0x60, 0xA0, 0x38 ],
+        [ 0xFF, 0xA0, 0xD8, 0x60 ],
+        [ 0xFF, 0xF0, 0xF0, 0xD0 ],
+        [ 0xFF, 0xF8, 0xD0, 0x90 ],
+        [ 0xFF, 0x90, 0x80, 0x68 ],
+        [ 0xFF, 0xB0, 0x68, 0x20 ],
+        [ 0xFF, 0xE8, 0x98, 0x48 ],
+        [ 0xFF, 0xF0, 0x68, 0x30 ],
+        [ 0xFF, 0xC8, 0x48, 0x28 ],
+        [ 0xFF, 0x90, 0x30, 0x20 ],
+        [ 0xFF, 0x30, 0x30, 0x30 ],
+        [ 0xFF, 0x01, 0x01, 0x01 ],
+        [ 0xFF, 0xFF, 0xFF, 0xFF ],
     ][paletteIndex].reverse();
 }
 
@@ -41,9 +42,6 @@ const dumpBytes = (r3pBody) => {
     r3pBody.map(byte => process.stdout.write(byte.toString(0x10)));
 }
 
-const divideToBits = (byte) => {
-    return [ ...Array(bitNumPerByte).keys() ].map(digit => takeBit(byte, digit));
-}
 
 const dumpBits = (r3pBody) => {
     r3pBody.map(byte => divideToBits(byte).map(bits => process.stdout.write(bits.toString())));
@@ -57,16 +55,13 @@ const getR3pIndex = (bmpIdx) => {
     return (getR3pBlockNo(bmpIdx) / 8 | 0) * 0x20 + (bmpIdx % 0x20) / 2;
 }
 
-const bitmapByte = (r3pBody, bmpIdx) => {
-    return [ 0x00, 0x01, 0x10, 0x11 ]
-        .map((adr, idx) => divideToBits(r3pBody[adr]).reverse())
-        .reduce((prv, bits, idx) => {
-            return prv + bits[bmpIdx % 8] << idx;
-        });
+const divideToBits = (byte) => {
+    return [ ...Array(bitNumPerByte).keys() ].map(digit => takeBit(byte, digit));
 }
 
-const takeBit = (byte, digit=0) => {
-    return (byte >> digit) & 0x01;
+// リトルエンディアン（小さい方から）
+const takeBit = (byte, digit) => {
+    return (byte >> (bitNumPerByte - 1 - digit)) & 0x01;
 }
 
 const reverseByteOrder = (byte) => {
@@ -74,36 +69,35 @@ const reverseByteOrder = (byte) => {
     return divideToBits(byte).reduce((prv, crt, idx) => prv + (crt << idx));
 }
 
+// r3pからビットマップ用のパレットインデックスを取り出す
+const getBitmapColorIndex = (r3pBody, bmpIdx) => {
+    return [ 0x00, 0x01, 0x10, 0x11 ]
+        // 読み込みbyte移動
+        .map(adr => adr + (bmpIdx / 8 | 0) * 0x02)
+        // 読み込みbyte移動（改行・画像ブロック移動）
+        .map(adr => adr + (bmpIdx / 0x40 | 0) * 0x10)
+        .map(adr => r3pBody[adr])
+        .map(byte => takeBit(byte, bmpIdx % 8))
+        .reduce((prv, bit, idx) => {
+            return prv + (bit << idx);
+        });
+}
+
+const getBitmapColorIndexes = (r3pBody, blockIdx) => {
+    return [...Array(0x40).keys()].map((pixelIdx) => {
+        return getBitmapColorIndex(r3pBody, blockIdx * 0x40 + pixelIdx);
+    })
+}
+
+const getBitmapBodyAsBlock = (r3pBody, blockIdx) => {
+    return getBitmapColorIndexes(r3pBody, blockIdx).flatMap(idx => getRGB(idx));
+}
 
 // 読み込み対象サイズ：0x520
 const toBMP = (buf, bufIndex) => {
-    //dumpBytes(buf.slice(r3pBodyOffset));
-    //dumpBits(buf.slice(r3pBodyOffset));
-    //dumpBitmapBytes(buf.slice(r3pBodyOffset));
-    //dumpBitMapRGB(buf.slice(r3pBodyOffset));
-    const offset = 0x0000;
-    console.log(offset.toString(0x10) + ":" + bitmapByte(buf, offset).toString(0x10));
+    //const offset = 0x0000;
+    console.log(getBitmapBodyAsBlock(buf, 0));
 
-
-    // let bytes = [8 * 8 * 8 * 4];
-    // for (let i = 0; i < 8; i++) {
-    //     for (let j = 0; j < 8; j++) {
-    //         const bits = [
-    //             divideToBits(buf[bufIndex + ((i * 2) + j * 2)]),
-    //             divideToBits(buf[bufIndex + 1 + ((i * 2) + j * 2)]),
-    //             divideToBits(buf[bufIndex + 0x10 + ((i * 2) + j * 2)]),
-    //             divideToBits(buf[bufIndex + 0x10 + 1 + ((i * 2) + j * 2)]),
-    //         ];
-    //         for (let k = 0; k < 8; k++) {
-    //             const color = (bits[3][k] << 3) + (bits[2][k] << 2) + (bits[1][k] << 1) + bits[0][k];
-    //             bytes[BMPAdrs(i, j ,k)] = colorPalette[color][0];
-    //             bytes[BMPAdrs(i, j ,k) + 1] = colorPalette[color][1];
-    //             bytes[BMPAdrs(i, j ,k) + 2] = colorPalette[color][2];
-    //             bytes[BMPAdrs(i, j ,k) + 3] = 0x00;
-    //         }
-    //     }
-    // }
-    //
     // const BMP_HEADER_BASE64 = 'Qk0AAAAAAAAAAHoAAABsAAAAAAAAAAAAAAABACAAAwAAAAAAAADDDgAAww4AAAAAAAAAAAAA/wAAAAD/AAAAAP8AAAAA/0JHUnM';
     // const BMP_HEADER = Uint8Array.from(atob(BMP_HEADER_BASE64), (c) => c.charCodeAt(0));
     // const BMP_HEADER_LENGTH = 122;
