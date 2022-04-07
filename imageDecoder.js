@@ -96,7 +96,7 @@ const getBitmapBodyAsBlock = (r3pBody, blockIdx) => {
 // 読み込み対象サイズ：0x520
 const toBMP = (buf, bufIndex) => {
     //const offset = 0x0000;
-    console.log(getBitmapBodyAsBlock(buf, 0));
+    const bytes = getBitmapBodyAsBlock(buf, 0);
 
     // const BMP_HEADER_BASE64 = 'Qk0AAAAAAAAAAHoAAABsAAAAAAAAAAAAAAABACAAAwAAAAAAAADDDgAAww4AAAAAAAAAAAAA/wAAAAD/AAAAAP8AAAAA/0JHUnM';
     // const BMP_HEADER = Uint8Array.from(atob(BMP_HEADER_BASE64), (c) => c.charCodeAt(0));
@@ -106,21 +106,21 @@ const toBMP = (buf, bufIndex) => {
     // const BMP_HEIGHT_OFFSET = 22;
     // const BMP_IMAGESIZE_OFFSET = 34;
     //
-    // const result = new Uint8Array(bytes.length);
-    //
-    // // result.set(BMP_HEADER);
-    // const dataView = new DataView(result.buffer);
-    // // dataView.setUint32(BMP_FILESIZE_OFFSET, BMP_HEADER_LENGTH + bytes.length, true);
-    // // dataView.setUint32(BMP_WIDTH_OFFSET, 8, true);
-    // // dataView.setInt32(BMP_HEIGHT_OFFSET, 1, true);
-    // // dataView.setUint32(BMP_IMAGESIZE_OFFSET, bytes.length, true);
-    //
-    // result.set(bytes, 0);
-    //
-    // fs.writeFile("out/out.bmp", dataView, (err) => {
-    //     if (err) throw err;
-    //     console.log('正常に書き込みが完了しました');
-    // });
+    const result = new Uint8Array(bytes.length);
+
+    // result.set(BMP_HEADER);
+    const dataView = new DataView(result.buffer);
+    // dataView.setUint32(BMP_FILESIZE_OFFSET, BMP_HEADER_LENGTH + bytes.length, true);
+    // dataView.setUint32(BMP_WIDTH_OFFSET, 8, true);
+    // dataView.setInt32(BMP_HEIGHT_OFFSET, 1, true);
+    // dataView.setUint32(BMP_IMAGESIZE_OFFSET, bytes.length, true);
+
+    result.set(bytes, 0);
+
+    fs.writeFile("out/out.bmp", dataView, (err) => {
+        if (err) throw err;
+        console.log('正常に書き込みが完了しました');
+    });
 }
 
 const offset = 0x0038;
