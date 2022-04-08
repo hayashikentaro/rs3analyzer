@@ -166,7 +166,7 @@ const toBMP = (buf, bufIndex) => {
 )
 }
 
-const offset = 0x0036;
+const offset = r3pBodyOffset;
 
 dumpEveryByte({offset: offset, size: 1, converter: toBMP});
 
