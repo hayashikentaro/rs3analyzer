@@ -102,7 +102,6 @@ const dumpBytes = (r3pBody) => {
     r3pBody.map(byte => process.stdout.write(byte.toString(0x10)));
 }
 
-
 const dumpBits = (r3pBody) => {
     r3pBody.map(byte => divideToBits(byte).map(bits => process.stdout.write(bits.toString())));
 }
@@ -133,9 +132,9 @@ const reverseByteOrder = (byte) => {
 const getBitmapColorIndex = (r3pBody, bmpIdx) => {
     return [ 0x00, 0x01, 0x10, 0x11 ]
         // 読み込みbyte移動
-        .map(adr => adr + (bmpIdx / 8 | 0) * 0x02)
+        .map(adr => adr + (((bmpIdx % 0x40) / 8 | 0) * 0x02))
         // 読み込みbyte移動（改行・画像ブロック移動）
-        .map(adr => adr + (bmpIdx / 0x40 | 0) * 0x10)
+        .map(adr => adr + ((bmpIdx / 0x40 | 0) * 0x20))
         .map(adr => r3pBody[adr])
         .map(byte => takeBit(byte, bmpIdx % 8))
         .reduce((prv, bit, idx) => {
