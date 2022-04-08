@@ -156,7 +156,7 @@ const getBitmapBodyAsBlock = (r3pBody, blockIdx) => {
 // 読み込み対象サイズ：0x520
 const toBMP = (buf, bufIndex) => {
     [...Array(12).keys()].map((idx) => {
-        const bytes = getBitmapBodyAsBlock(buf, idx);
+        const bytes = getBitmapBodyAsBlock(buf.slice(bufIndex), idx);
         let result = new Uint8Array(bitmapHeaderOfBlock.length + bytes.length);
         result.set(bitmapHeaderOfBlock);
         const dataView = new DataView(result.buffer);
