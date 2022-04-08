@@ -1,5 +1,4 @@
 import {dumpEveryByte} from "./util.js";
-import {Blob} from 'buffer';
 import * as fs from 'fs';
 
 const r3pSize = 0x0520;
@@ -152,19 +151,22 @@ const getBitmapBodyAsBlock = (r3pBody, blockIdx) => {
 
 // 読み込み対象サイズ：0x520
 const toBMP = (buf, bufIndex) => {
-    const bytes = getBitmapBodyAsBlock(buf, 0);
-    let result = new Uint8Array(bitmapHeaderOfBlock.length + bytes.length);
-    result.set(bitmapHeaderOfBlock);
-    const dataView = new DataView(result.buffer);
-    result.set(bytes, bitmapHeaderOfBlock.length);
+    [...Array(12).keys()].map((idx) => {
+        const bytes = getBitmapBodyAsBlock(buf, idx);
+        let result = new Uint8Array(bitmapHeaderOfBlock.length + bytes.length);
+        result.set(bitmapHeaderOfBlock);
+        const dataView = new DataView(result.buffer);
+        result.set(bytes, bitmapHeaderOfBlock.length);
 
-    fs.writeFile("out/out.bmp", dataView, (err) => {
-        if (err) throw err;
-        console.log('正常に書き込みが完了しました');
-    });
+        fs.writeFile(`out/out${idx}.bmp`, dataView, (err) => {
+            if (err) throw err;
+            console.log('正常に書き込みが完了しました');
+        });
+    }
+)
 }
 
-const offset = 0x0038;
+const offset = 0x0036;
 
 dumpEveryByte({offset: offset, size: 1, converter: toBMP});
 
