@@ -7,8 +7,8 @@ const bmpPixelNum = r3pSize * 2;
 const r3pBodyOffset = 0x0036;
 const bitNumPerByte = 8;
 
-Array.prototype.union = function (item) {
-    return _.union(this, [item]);
+Array.prototype.concat = function (item) {
+    return _.concat(this, item);
 }
 
 const getRGB = (paletteIndex) => {
@@ -30,7 +30,7 @@ const getRGB = (paletteIndex) => {
         [ 0x40, 0x40, 0xC8 ],
         [ 0x88, 0x78, 0xF8 ],
         [ 0xB0, 0x78, 0xF8 ],
-    ][paletteIndex].reverse().union(0x00);
+    ][paletteIndex].reverse().concat(0x00);
 }
 
 const bitmapHeaderOfBlock = [
