@@ -30,6 +30,63 @@ const getRGB = (paletteIndex) => {
     ][paletteIndex].reverse();
 }
 
+const bitmapHeaderOfBlock = [
+    0x42,
+    0x4D,
+    0x38,
+    0x01,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x36,
+    0x00,
+    0x00,
+    0x00,
+    0x28,
+    0x00,
+    0x00,
+    0x00,
+    0x08,
+    0x00,
+    0x00,
+    0x00,
+    0x08,
+    0x00,
+    0x00,
+    0x00,
+    0x01,
+    0x00,
+    0x20,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x02,
+    0x01,
+    0x00,
+    0x00,
+    0x12,
+    0x0B,
+    0x00,
+    0x00,
+    0x12,
+    0x0B,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+];
+
 const dumpBitmapBytes = (r3pBody) => {
     [...Array(bmpPixelNum).keys()].map(idx => bitmapByte(r3pBody, idx)).map(byte => process.stdout.write(byte.toString(0x10)));
 }
@@ -95,27 +152,11 @@ const getBitmapBodyAsBlock = (r3pBody, blockIdx) => {
 
 // 読み込み対象サイズ：0x520
 const toBMP = (buf, bufIndex) => {
-    //const offset = 0x0000;
     const bytes = getBitmapBodyAsBlock(buf, 0);
-
-    // const BMP_HEADER_BASE64 = 'Qk0AAAAAAAAAAHoAAABsAAAAAAAAAAAAAAABACAAAwAAAAAAAADDDgAAww4AAAAAAAAAAAAA/wAAAAD/AAAAAP8AAAAA/0JHUnM';
-    // const BMP_HEADER = Uint8Array.from(atob(BMP_HEADER_BASE64), (c) => c.charCodeAt(0));
-    // const BMP_HEADER_LENGTH = 122;
-    // const BMP_FILESIZE_OFFSET = 2;
-    // const BMP_WIDTH_OFFSET = 18;
-    // const BMP_HEIGHT_OFFSET = 22;
-    // const BMP_IMAGESIZE_OFFSET = 34;
-    //
-    const result = new Uint8Array(bytes.length);
-
-    // result.set(BMP_HEADER);
+    let result = new Uint8Array(bitmapHeaderOfBlock.length + bytes.length);
+    result.set(bitmapHeaderOfBlock);
     const dataView = new DataView(result.buffer);
-    // dataView.setUint32(BMP_FILESIZE_OFFSET, BMP_HEADER_LENGTH + bytes.length, true);
-    // dataView.setUint32(BMP_WIDTH_OFFSET, 8, true);
-    // dataView.setInt32(BMP_HEIGHT_OFFSET, 1, true);
-    // dataView.setUint32(BMP_IMAGESIZE_OFFSET, bytes.length, true);
-
-    result.set(bytes, 0);
+    result.set(bytes, bitmapHeaderOfBlock.length);
 
     fs.writeFile("out/out.bmp", dataView, (err) => {
         if (err) throw err;
