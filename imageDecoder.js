@@ -137,7 +137,7 @@ const bitmapBlockSize = 0x40;
 const snes4bppBlockSize = 0x20;
 
 const snes4bppReadOffsetInBlock = (bitmapPixelIndex) => {
-    return ((bitmapPixelIndex % bitmapBlockSize) / bitPerByte | 0) * snes4bppNeighborByteNum;
+    return ((bitmapBlockSize - 1 - (bitmapPixelIndex % bitmapBlockSize)) / bitPerByte | 0) * snes4bppNeighborByteNum;
 }
 
 const snes4bppBlockNo = (bitmapPixelIndex) => {
