@@ -151,8 +151,7 @@ const toBMP = (buf :number[]) => {
             if (err) throw err;
             console.log('creating bmp files was succeeded!!');
         });
-    }
-)
+    })
 }
 
 dump({offset: r3pBodyOffset, converter: toBMP});
