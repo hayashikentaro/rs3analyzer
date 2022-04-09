@@ -30,49 +30,55 @@ const getRGB = (paletteIndex) => {
     ][paletteIndex].reverse().concat(alphaChannelByte);
 }
 
-const bitmapHeaderOfBlock = [
-    // ファイルタイプ
-    0x42, 0x4D,
-    // TODO: ファイルサイズ
-    0x38, 0x01, 0x00, 0x00,
-    // 予約領域１
-    0x00, 0x00,
-    // 予約領域２
-    0x00, 0x00,
-    // ファイル先頭から画像データまでのオフセット
-    0x36, 0x00, 0x00, 0x00,
-    // 情報ヘッダサイズ[byte]
-    0x28, 0x00, 0x00, 0x00,
-    // TODO: 画像の幅
-    0x08,
-    0x00,
-    0x00,
-    0x00,
-    // TODO: 画像の高さ
-    0x08,
-    0x00,
-    0x00,
-    0x00,
-    // プレーン数
-    0x01, 0x00,
-    // 色ビット数
-    0x20, 0x00,
-    // 圧縮形式
-    0x00, 0x00, 0x00, 0x00,
-    // TODO: 画像データサイズ
-    0x02,
-    0x01,
-    0x00,
-    0x00,
-    // 水平解像度
-    0x12, 0x0B, 0x00, 0x00,
-    // 垂直解像度
-    0x12, 0x0B, 0x00, 0x00,
-    // 格納パレット数
-    0x00, 0x00, 0x00, 0x00,
-    // 重要色数
-    0x00, 0x00, 0x00, 0x00,
-];
+const bitmapHeaderOfBlock = ({width, height}) => {
+    const headerSize = 0x36;
+    return [
+        // ファイルタイプ
+        0x42, 0x4D,
+        // TODO: ファイルサイズ
+        0x38,
+        0x01,
+        0x00,
+        0x00,
+        // 予約領域１
+        0x00, 0x00,
+        // 予約領域２
+        0x00, 0x00,
+        // ファイル先頭から画像データまでのオフセット
+        headerSize, 0x00, 0x00, 0x00,
+        // 情報ヘッダサイズ[byte]
+        0x28, 0x00, 0x00, 0x00,
+        // TODO: 画像の幅
+        0x08,
+        0x00,
+        0x00,
+        0x00,
+        // TODO: 画像の高さ
+        0x08,
+        0x00,
+        0x00,
+        0x00,
+        // プレーン数
+        0x01, 0x00,
+        // 色ビット数
+        0x20, 0x00,
+        // 圧縮形式
+        0x00, 0x00, 0x00, 0x00,
+        // TODO: 画像データサイズ
+        0x02,
+        0x01,
+        0x00,
+        0x00,
+        // 水平解像度
+        0x12, 0x0B, 0x00, 0x00,
+        // 垂直解像度
+        0x12, 0x0B, 0x00, 0x00,
+        // 格納パレット数
+        0x00, 0x00, 0x00, 0x00,
+        // 重要色数
+        0x00, 0x00, 0x00, 0x00,
+    ];
+}
 
 const dumpBitmapBytes = (r3pBody) => {
     [...Array(bmpPixelNum).keys()].map(idx => bitmapByte(r3pBody, idx)).map(byte => process.stdout.write(byte.toString(0x10)));
@@ -157,10 +163,11 @@ const getBitmapBodyAsBlock = (r3pBody, blockIdx) => {
 const toBMP = (buf) => {
     [...Array(36).keys()].map((idx) => {
         const bytes = getBitmapBodyAsBlock(buf, idx);
-        let result = new Uint8Array(bitmapHeaderOfBlock.length + bytes.length);
-        result.set(bitmapHeaderOfBlock);
+        const header = bitmapHeaderOfBlock({});
+        let result = new Uint8Array(header.length + bytes.length);
+        result.set(header);
         const dataView = new DataView(result.buffer);
-        result.set(bytes, bitmapHeaderOfBlock.length);
+        result.set(bytes, header.length);
 
         fs.writeFile(`out/out${idx}.bmp`, dataView, (err) => {
             if (err) throw err;
