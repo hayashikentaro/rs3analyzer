@@ -5,7 +5,7 @@ import _ from "lodash";
 const r3pSize = 0x0520;
 const bmpPixelNum = r3pSize * 2;
 const r3pBodyOffset = 0x0036;
-const bitNumPerByte = 8;
+const bitPerByte = 8;
 
 Array.prototype.concat = function (item) {
     return _.concat(this, item);
@@ -107,7 +107,7 @@ const dumpBits = (r3pBody) => {
 }
 
 const getR3pBlockNo = (bmpIdx) => {
-    return bmpIdx / bitNumPerByte | 0;
+    return bmpIdx / bitPerByte | 0;
 }
 
 const getR3pIndex = (bmpIdx) => {
@@ -115,12 +115,12 @@ const getR3pIndex = (bmpIdx) => {
 }
 
 const divideToBits = (byte) => {
-    return [ ...Array(bitNumPerByte).keys() ].map(digit => takeBit(byte, digit));
+    return [ ...Array(bitPerByte).keys() ].map(digit => takeBit(byte, digit));
 }
 
 // リトルエンディアン（小さい方から）
 const takeBit = (byte, digit) => {
-    return (byte >> (bitNumPerByte - 1 - digit)) & 0x01;
+    return (byte >> (bitPerByte - 1 - digit)) & 0x01;
 }
 
 const reverseByteOrder = (byte) => {
@@ -128,15 +128,32 @@ const reverseByteOrder = (byte) => {
     return divideToBits(byte).reduce((prv, crt, idx) => prv + (crt << idx));
 }
 
+const paginatedIndex = (index, pageSize) => {
+    return index % pageSize;
+}
+
+const snes4bppNeighborByteNum = 0x02;
+const bitmapBlockSize = 0x40;
+const snes4bppBlockSize = 0x20;
+
+const snes4bppReadOffsetInBlock = (bitmapPixelIndex) => {
+    return ((bitmapPixelIndex % bitmapBlockSize) / bitPerByte | 0) * snes4bppNeighborByteNum;
+}
+
+const snes4bppBlockNo = (bitmapPixelIndex) => {
+    return ((bitmapPixelIndex / bitmapBlockSize) | 0);
+}
+
+const snes4bppReadOffset = (bitmapPixelIndex) => {
+    return snes4bppBlockNo(bitmapPixelIndex) * snes4bppBlockSize + snes4bppReadOffsetInBlock(bitmapPixelIndex);
+}
+
 // r3pからビットマップ用のパレットインデックスを取り出す
 const getBitmapColorIndex = (r3pBody, bmpIdx) => {
     return [ 0x00, 0x01, 0x10, 0x11 ]
-        // 読み込みbyte移動
-        .map(adr => adr + (((bmpIdx % 0x40) / 8 | 0) * 0x02))
-        // 読み込みbyte移動（改行・画像ブロック移動）
-        .map(adr => adr + ((bmpIdx / 0x40 | 0) * 0x20))
+        .map(adr => snes4bppReadOffset(bmpIdx) + adr)
         .map(adr => r3pBody[adr])
-        .map(byte => takeBit(byte, bmpIdx % 8))
+        .map(byte => takeBit(byte, bmpIdx % bitPerByte))
         .reduce((prv, bit, idx) => {
             return prv + (bit << idx);
         });
