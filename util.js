@@ -1,10 +1,7 @@
 import * as fs from 'fs';
 
 const outputEveryByte = ({content, offset, size, converter}) => {
-    for (let i = 0; i < size; i++) {
-        //console.log((offset + i).toString(16) + " : " + content[offset + i]);
-        converter(content, offset + i);
-    }
+    [...Array(size).keys()].map((idx) => converter(content, offset + idx));
 }
 
 const dump = ({offset, size, output, converter}) => {
