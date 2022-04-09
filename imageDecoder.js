@@ -6,10 +6,7 @@ const r3pSize = 0x0520;
 const bmpPixelNum = r3pSize * 2;
 const r3pBodyOffset = 0x0036;
 const bitPerByte = 8;
-
-Array.prototype.concat = function (item) {
-    return _.concat(this, item);
-}
+const alphaChannelByte = 0x00;
 
 const getRGB = (paletteIndex) => {
     // リトルエンディアンのため反転
@@ -30,7 +27,7 @@ const getRGB = (paletteIndex) => {
         [ 0x40, 0x40, 0xC8 ],
         [ 0x88, 0x78, 0xF8 ],
         [ 0xB0, 0xD0, 0xE8 ],
-    ][paletteIndex].reverse().concat(0x00);
+    ][paletteIndex].reverse().concat(alphaChannelByte);
 }
 
 const bitmapHeaderOfBlock = [
