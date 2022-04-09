@@ -149,7 +149,7 @@ const toBMP = (buf :number[]) => {
 
         fs.writeFile(`out/out${idx}.bmp`, dataView, (err) => {
             if (err) throw err;
-            console.log('正常に書き込みが完了しました');
+            console.log('creating bmp files was succeeded!!');
         });
     }
 )
