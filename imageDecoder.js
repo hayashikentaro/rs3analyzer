@@ -1,4 +1,4 @@
-import {dumpEveryByte} from "./util.js";
+import {dump} from "./util.js";
 import * as fs from 'fs';
 import _ from "lodash";
 
@@ -167,9 +167,9 @@ const getBitmapBodyAsBlock = (r3pBody, blockIdx) => {
 }
 
 // 読み込み対象サイズ：0x520
-const toBMP = (buf, bufIndex) => {
+const toBMP = (buf) => {
     [...Array(36).keys()].map((idx) => {
-        const bytes = getBitmapBodyAsBlock(buf.slice(bufIndex), idx);
+        const bytes = getBitmapBodyAsBlock(buf, idx);
         let result = new Uint8Array(bitmapHeaderOfBlock.length + bytes.length);
         result.set(bitmapHeaderOfBlock);
         const dataView = new DataView(result.buffer);
@@ -183,8 +183,6 @@ const toBMP = (buf, bufIndex) => {
 )
 }
 
-const offset = r3pBodyOffset;
-
-dumpEveryByte({offset: offset, size: 1, converter: toBMP});
+dump({offset: r3pBodyOffset, converter: toBMP});
 
 
