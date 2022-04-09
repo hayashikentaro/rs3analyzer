@@ -1,14 +1,12 @@
-import {dump} from "./util.js";
+import {dump} from "./util";
 import * as fs from 'fs';
-import _ from "lodash";
 
 const r3pSize = 0x0520;
-const bmpPixelNum = r3pSize * 2;
 const r3pBodyOffset = 0x0036;
 const bitPerByte = 8;
 const alphaChannelByte = 0x00;
 
-const getRGB = (paletteIndex) => {
+const getRGB = (paletteIndex :number) => {
     // リトルエンディアンのため反転
     return [
         [ 0x18, 0x30, 0x38 ],
@@ -29,8 +27,9 @@ const getRGB = (paletteIndex) => {
         [ 0x90, 0xE8, 0x38 ],
     ][paletteIndex].reverse().concat(alphaChannelByte);
 }
-
-const bitmapHeaderOfBlock = ({width, height}) => {
+// TODO:
+// @ts-ignore
+const bitmapHeaderOfBlock = () => {
     const headerSize = 0x36;
     return [
         // ファイルタイプ
@@ -80,45 +79,24 @@ const bitmapHeaderOfBlock = ({width, height}) => {
     ];
 }
 
-const dumpBitmapBytes = (r3pBody) => {
-    [...Array(bmpPixelNum).keys()].map(idx => bitmapByte(r3pBody, idx)).map(byte => process.stdout.write(byte.toString(0x10)));
-}
-
-const dumpBitMapRGB = (r3pBody) => {
-    [...Array(bmpPixelNum).keys()].map(idx => bitmapByte(r3pBody, idx)).map(halfByte => getRGB(halfByte).map(byte => process.stdout.write(byte.toString(0x10))));
-}
-
-const dumpBytes = (r3pBody) => {
-    r3pBody.map(byte => process.stdout.write(byte.toString(0x10)));
-}
-
-const dumpBits = (r3pBody) => {
-    r3pBody.map(byte => divideToBits(byte).map(bits => process.stdout.write(bits.toString())));
-}
-
-const getR3pBlockNo = (bmpIdx) => {
+const getR3pBlockNo = (bmpIdx :number) => {
     return bmpIdx / bitPerByte | 0;
 }
 
-const getR3pIndex = (bmpIdx) => {
+const getR3pIndex = (bmpIdx :number) => {
     return (getR3pBlockNo(bmpIdx) / 8 | 0) * 0x20 + (bmpIdx % 0x20) / 2;
 }
 
-const divideToBits = (byte) => {
+const divideToBits = (byte :number) => {
     return [ ...Array(bitPerByte).keys() ].map(digit => takeBit(byte, digit));
 }
 
 // リトルエンディアン（小さい方から）
-const takeBit = (byte, digit) => {
+const takeBit = (byte :number, digit: number) => {
     return (byte >> (bitPerByte - 1 - digit)) & 0x01;
 }
 
-const reverseByteOrder = (byte) => {
-    // リトルエンディアン
-    return divideToBits(byte).reduce((prv, crt, idx) => prv + (crt << idx));
-}
-
-const paginatedIndex = (index, pageSize) => {
+const paginatedIndex = (index :number, pageSize:number) => {
     return index % pageSize;
 }
 
@@ -126,20 +104,20 @@ const snes4bppNeighborByteNum = 0x02;
 const bitmapBlockSize = 0x40;
 const snes4bppBlockSize = 0x20;
 
-const snes4bppReadOffsetInBlock = (bitmapPixelIndex) => {
+const snes4bppReadOffsetInBlock = (bitmapPixelIndex :number) => {
     return ((bitmapBlockSize - 1 - (bitmapPixelIndex % bitmapBlockSize)) / bitPerByte | 0) * snes4bppNeighborByteNum;
 }
 
-const snes4bppBlockNo = (bitmapPixelIndex) => {
+const snes4bppBlockNo = (bitmapPixelIndex :number) => {
     return ((bitmapPixelIndex / bitmapBlockSize) | 0);
 }
 
-const snes4bppReadOffset = (bitmapPixelIndex) => {
+const snes4bppReadOffset = (bitmapPixelIndex :number) => {
     return snes4bppBlockNo(bitmapPixelIndex) * snes4bppBlockSize + snes4bppReadOffsetInBlock(bitmapPixelIndex);
 }
 
 // r3pからビットマップ用のパレットインデックスを取り出す
-const getBitmapColorIndex = (r3pBody, bmpIdx) => {
+const getBitmapColorIndex = (r3pBody :number[], bmpIdx :number) => {
     return [ 0x00, 0x01, 0x10, 0x11 ]
         .map(adr => snes4bppReadOffset(bmpIdx) + adr)
         .map(adr => r3pBody[adr])
@@ -149,21 +127,21 @@ const getBitmapColorIndex = (r3pBody, bmpIdx) => {
         });
 }
 
-const getBitmapColorIndexes = (r3pBody, blockIdx) => {
+const getBitmapColorIndexes = (r3pBody :number[], blockIdx :number) => {
     return [...Array(0x40).keys()].map((pixelIdx) => {
         return getBitmapColorIndex(r3pBody, blockIdx * 0x40 + pixelIdx);
     })
 }
 
-const getBitmapBodyAsBlock = (r3pBody, blockIdx) => {
+const getBitmapBodyAsBlock = (r3pBody :number[], blockIdx :number) => {
     return getBitmapColorIndexes(r3pBody, blockIdx).flatMap(idx => getRGB(idx));
 }
 
 // 読み込み対象サイズ：0x520
-const toBMP = (buf) => {
+const toBMP = (buf :number[]) => {
     [...Array(36).keys()].map((idx) => {
         const bytes = getBitmapBodyAsBlock(buf, idx);
-        const header = bitmapHeaderOfBlock({});
+        const header = bitmapHeaderOfBlock();
         let result = new Uint8Array(header.length + bytes.length);
         result.set(header);
         const dataView = new DataView(result.buffer);

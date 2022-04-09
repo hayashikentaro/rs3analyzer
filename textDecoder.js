@@ -1,4 +1,4 @@
-import {dumpEveryByte} from "./util.js";
+import {dumpEveryByte} from "./util.ts";
 
 /* ロマンシング サ・ガ3の文字コード表(シングルバイト) */
 const getChar = (buf, bufIndex) => {
