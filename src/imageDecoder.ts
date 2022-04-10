@@ -1,8 +1,8 @@
 import {dump} from "./util";
 import * as fs from 'fs';
 
-const r3pSize = 0x0520;
-const r3pBodyOffset = 0x0036;
+const snes4bppSize = 0x0520;
+const snes4bppBodyOffset = 0x0036;
 const bitPerByte = 8;
 const alphaChannelByte = 0x00;
 
@@ -117,24 +117,24 @@ const snes4bppReadOffset = (bitmapPixelIndex :number) => {
 }
 
 // r3pからビットマップ用のパレットインデックスを取り出す
-const getBitmapColorIndex = (r3pBody :number[], bmpIdx :number) => {
+const getBitmapColorIndex = (snes4bppBody :number[], bmpIdx :number) => {
     return [ 0x00, 0x01, 0x10, 0x11 ]
         .map(adr => snes4bppReadOffset(bmpIdx) + adr)
-        .map(adr => r3pBody[adr])
+        .map(adr => snes4bppBody[adr])
         .map(byte => takeBit(byte, bmpIdx % bitPerByte))
         .reduce((prv, bit, idx) => {
             return prv + (bit << idx);
         });
 }
 
-const getBitmapColorIndexes = (r3pBody :number[], blockIdx :number) => {
+const getBitmapColorIndexes = (snes4bppBody :number[], blockIdx :number) => {
     return [...Array(0x40).keys()].map((pixelIdx) => {
-        return getBitmapColorIndex(r3pBody, blockIdx * 0x40 + pixelIdx);
+        return getBitmapColorIndex(snes4bppBody, blockIdx * 0x40 + pixelIdx);
     })
 }
 
-const getBitmapBodyAsBlock = (r3pBody :number[], blockIdx :number) => {
-    return getBitmapColorIndexes(r3pBody, blockIdx).flatMap(idx => getRGB(idx));
+const getBitmapBodyAsBlock = (snes4bppBody :number[], blockIdx :number) => {
+    return getBitmapColorIndexes(snes4bppBody, blockIdx).flatMap(idx => getRGB(idx));
 }
 
 // 読み込み対象サイズ：0x520
@@ -154,6 +154,6 @@ const toBMP = (buf :number[]) => {
     })
 }
 
-dump({offset: r3pBodyOffset, converter: toBMP});
+dump({offset: snes4bppBodyOffset, converter: toBMP});
 
 
