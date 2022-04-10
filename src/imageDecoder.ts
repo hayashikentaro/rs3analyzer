@@ -96,25 +96,9 @@ const bitmapHeaderOfBlock = () => {
     ];
 }
 
-const getR3pBlockNo = (bmpIdx :number) => {
-    return bmpIdx / bitPerByte | 0;
-}
-
-const getR3pIndex = (bmpIdx :number) => {
-    return (getR3pBlockNo(bmpIdx) / 8 | 0) * 0x20 + (bmpIdx % 0x20) / 2;
-}
-
-const divideToBits = (byte :number) => {
-    return [ ...Array(bitPerByte).keys() ].map(digit => takeBit(byte, digit));
-}
-
 // リトルエンディアン（小さい方から）
 const takeBit = (byte :number, digit: number) => {
     return (byte >> (bitPerByte - 1 - digit)) & 0x01;
-}
-
-const paginatedIndex = (index :number, pageSize:number) => {
-    return index % pageSize;
 }
 
 const snes4bppNeighborByteNum = 0x02;
