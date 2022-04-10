@@ -82,7 +82,6 @@ const bitmapHeaderOfBlock = () => {
 
 const snes4bppNeighborByteNum = 0x02;
 const bitmapBlockSize = 0x40;
-const snes4bppBlockSize = 0x20;
 
 interface Bitmap {
     header: Byte[];
