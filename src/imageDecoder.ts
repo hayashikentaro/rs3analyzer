@@ -3,10 +3,10 @@ import * as fs from 'fs';
 import {bitPerByte, Byte, createByte} from "./byte";
 
 const snes4bppBodyOffset = 0x0036;
-const alphaChannelByte = 0x00;
 
 // TODO: 動的ロードに置換
 const getRGB = (paletteIndex :number) => {
+    const alphaChannelByte = 0x00;
     // リトルエンディアンのため反転
     return [
         [ 0x18, 0x30, 0x38 ],
