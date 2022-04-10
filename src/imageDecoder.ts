@@ -26,57 +26,7 @@ const getRGB = (paletteIndex :number) => {
     ][paletteIndex].reverse().concat(alphaChannelByte);
 }
 
-// TODO:
-// @ts-ignore
-const bitmapHeaderOfBlock = () => {
-    const headerSize = 0x36;
-    return [
-        // ファイルタイプ
-        0x42, 0x4D,
-        // TODO: ファイルサイズ
-        0x38,
-        0x01,
-        0x00,
-        0x00,
-        // 予約領域１
-        0x00, 0x00,
-        // 予約領域２
-        0x00, 0x00,
-        // ファイル先頭から画像データまでのオフセット
-        headerSize, 0x00, 0x00, 0x00,
-        // 情報ヘッダサイズ[byte]
-        0x28, 0x00, 0x00, 0x00,
-        // TODO: 画像の幅
-        0x08,
-        0x00,
-        0x00,
-        0x00,
-        // TODO: 画像の高さ
-        0x08,
-        0x00,
-        0x00,
-        0x00,
-        // プレーン数
-        0x01, 0x00,
-        // 色ビット数
-        0x20, 0x00,
-        // 圧縮形式
-        0x00, 0x00, 0x00, 0x00,
-        // TODO: 画像データサイズ
-        0x02,
-        0x01,
-        0x00,
-        0x00,
-        // 水平解像度
-        0x12, 0x0B, 0x00, 0x00,
-        // 垂直解像度
-        0x12, 0x0B, 0x00, 0x00,
-        // 格納パレット数
-        0x00, 0x00, 0x00, 0x00,
-        // 重要色数
-        0x00, 0x00, 0x00, 0x00,
-    ];
-}
+
 
 interface Bitmap {
     header: Byte[];
@@ -89,16 +39,68 @@ interface Bitmap {
 
 const createBitmapOfBlock :(bytes :Byte[]) => Bitmap =
   (bytes) => {
-    return {
-        header: bitmapHeaderOfBlock().map((byte => createByte(byte))),
-        body: bytes,
-        toBuffer: function() :ArrayBuffer {
-            return new Uint8Array(this.header.concat(this.body).map((byte) => byte.value)).buffer;
-        },
-        size: bytes.length,
-        width: 8,
-        height: 8,
-    }
+      // TODO:
+      // @ts-ignore
+      const bitmapHeaderOfBlock = () => {
+          const headerSize = 0x36;
+          return [
+              // ファイルタイプ
+              0x42, 0x4D,
+              // TODO: ファイルサイズ
+              0x38,
+              0x01,
+              0x00,
+              0x00,
+              // 予約領域１
+              0x00, 0x00,
+              // 予約領域２
+              0x00, 0x00,
+              // ファイル先頭から画像データまでのオフセット
+              headerSize, 0x00, 0x00, 0x00,
+              // 情報ヘッダサイズ[byte]
+              0x28, 0x00, 0x00, 0x00,
+              // TODO: 画像の幅
+              0x08,
+              0x00,
+              0x00,
+              0x00,
+              // TODO: 画像の高さ
+              0x08,
+              0x00,
+              0x00,
+              0x00,
+              // プレーン数
+              0x01, 0x00,
+              // 色ビット数
+              0x20, 0x00,
+              // 圧縮形式
+              0x00, 0x00, 0x00, 0x00,
+              // TODO: 画像データサイズ
+              0x02,
+              0x01,
+              0x00,
+              0x00,
+              // 水平解像度
+              0x12, 0x0B, 0x00, 0x00,
+              // 垂直解像度
+              0x12, 0x0B, 0x00, 0x00,
+              // 格納パレット数
+              0x00, 0x00, 0x00, 0x00,
+              // 重要色数
+              0x00, 0x00, 0x00, 0x00,
+          ];
+      }
+
+      return {
+          header: bitmapHeaderOfBlock().map((byte => createByte(byte))),
+          body: bytes,
+          toBuffer: function() :ArrayBuffer {
+              return new Uint8Array(this.header.concat(this.body).map((byte) => byte.value)).buffer;
+          },
+          size: bytes.length,
+          width: 8,
+          height: 8,
+      }
 }
 
 interface Snes4bppBlock {
