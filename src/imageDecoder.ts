@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import {bitPerByte, Byte, createByte} from "./byte";
 
 // TODO: 動的ロードに置換
-const getRGB = (paletteIndex :number) => {
+const bytesOfRGBA = (paletteIndex :number) => {
     const alphaChannelByte = 0x00;
     // リトルエンディアンのため反転
     return [
@@ -129,8 +129,8 @@ const createSnes4bppBlock :(bytes :Byte[]) => Snes4bppBlock = (bytes) => {
         toBitMap: function(): Bitmap {
             return createBitmapOfBlock(
               [...Array(0x40).keys()].map(
-                (pixelIdx) => getBitmapColorIndex(this.bytes, pixelIdx)
-              ).flatMap((idx) => getRGB(idx))
+                (pixelIndex) => getBitmapColorIndex(this.bytes, pixelIndex)
+              ).flatMap((paletteIndex) => bytesOfRGBA(paletteIndex))
                 .map((raw) => createByte(raw))
             );
         }
