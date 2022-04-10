@@ -25,6 +25,7 @@ const getRGB = (paletteIndex :number) => {
         [ 0x90, 0xE8, 0x38 ],
     ][paletteIndex].reverse().concat(alphaChannelByte);
 }
+
 // TODO:
 // @ts-ignore
 const bitmapHeaderOfBlock = () => {
