@@ -6,6 +6,22 @@ const snes4bppBodyOffset = 0x0036;
 const bitPerByte = 8;
 const alphaChannelByte = 0x00;
 
+interface BitmapBytesPerBlock {
+    bytes :number[];
+    size :number;
+    width :number;
+    height: number;
+}
+
+const createBitmapBytesPerBlock = (params :{bytes :number[], width :number, height :number}) => {
+    return {
+        bytes: params.bytes,
+        size: params.bytes.length,
+        width: params.width,
+        height: params.height,
+    }
+}
+
 // TODO: 動的ロードに置換
 const getRGB = (paletteIndex :number) => {
     // リトルエンディアンのため反転
