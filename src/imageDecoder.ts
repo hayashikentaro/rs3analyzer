@@ -6,22 +6,6 @@ const snes4bppBodyOffset = 0x0036;
 const bitPerByte = 8;
 const alphaChannelByte = 0x00;
 
-interface BitmapBytesPerBlock {
-    bytes :number[];
-    size :number;
-    width :number;
-    height: number;
-}
-
-const createBitmapBytesPerBlock = (params :{bytes :number[], width :number, height :number}) => {
-    return {
-        bytes: params.bytes,
-        size: params.bytes.length,
-        width: params.width,
-        height: params.height,
-    }
-}
-
 // TODO: 動的ロードに置換
 const getRGB = (paletteIndex :number) => {
     // リトルエンディアンのため反転
@@ -117,6 +101,29 @@ const createByte: (byte: number) => Byte = (byte) => {
             return takeBit(this.value, index);
         },
     }
+}
+
+interface Bitmap {
+    header: Byte[];
+    body: Byte[];
+    size: number;
+    width: number;
+    height: number;
+}
+
+const createBitmapOfBlock :(bytes :Byte[]) => Bitmap =
+  (bytes) => {
+    return {
+        header: bitmapHeaderOfBlock().map((byte => createByte(byte))),
+        body: bytes,
+        size: bytes.length,
+        width: 8,
+        height: 8,
+    }
+}
+interface Snes4bppBlock {
+    bytes: Byte[];
+    toBitMap: () => Bitmap;
 }
 
 const snes4bppReadOffsetInBlock = (bitmapPixelIndex :number) => {
