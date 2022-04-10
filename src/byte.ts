@@ -6,6 +6,8 @@ export interface Byte {
   bit: (index :number) => number;
 }
 
+export interface ByteArray extends Array<Byte> {}
+
 export const createByte: (raw: number) => Byte = (raw) => {
   return {
     value: raw & 0xFF,
@@ -20,6 +22,6 @@ const takeBit: (byte :number, digit: number) => number = (byte, digit) => {
   return (byte >> (bitPerByte - 1 - digit)) & 0x01;
 }
 
-export const bytesToBuffer :(bytes :Byte[]) => ArrayBuffer = (bytes) => {
+export const bytesToBuffer :(bytes :ByteArray) => ArrayBuffer = (bytes) => {
   return new Uint8Array(bytes.map((byte) => byte.value)).buffer;
 }

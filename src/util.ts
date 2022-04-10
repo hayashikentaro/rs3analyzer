@@ -1,14 +1,14 @@
 import * as fs from 'fs';
-import {Byte, bytesToBuffer, createByte} from "./byte";
+import {Byte, ByteArray, bytesToBuffer, createByte} from "./byte";
 
-export const dump: (offset :number, converter :(buf: Byte[]) => void) => void =
+export const dump: (offset :number, converter :(buf: ByteArray) => void) => void =
   (offset, converter) => {
     fs.readFile('in', (err, content) => {
         converter(Array.from(content).slice(offset).map((num) => createByte(num)));
     });
 }
 
-export const writeFile: (fileName: string, bytes: Byte[]) => void = (fileName, bytes) => {
+export const writeFile: (fileName: string, bytes: ByteArray) => void = (fileName, bytes) => {
     fs.writeFile(
         fileName,
         new DataView(bytesToBuffer(bytes)),
