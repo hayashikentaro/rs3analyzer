@@ -146,9 +146,6 @@ const toBMP = (buf :Byte[]) => {
         const dataView = new DataView(result.buffer);
         result.set(bitmap.body.map((byte) => byte.value), bitmap.header.length);
 
-        // const dataView = new DataView(result.buffer);
-        // result.set(bytes, header.length);
-
         fs.writeFile(`out/out${idx}.bmp`, dataView, (err) => {
             if (err) throw err;
             console.log('creating bmp files was succeeded!!');
