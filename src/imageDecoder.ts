@@ -128,9 +128,9 @@ const createSnes4bppBlock :(bytes :Byte[]) => Snes4bppBlock = (bytes) => {
         bytes: bytes,
         toBitMap: function(): Bitmap {
             return createBitmapOfBlock(
-              [...Array(bitmapBlockSize).keys()].map(
-                (pixelIndex) => getBitmapColorIndex(this.bytes, pixelIndex)
-              ).flatMap((paletteIndex) => bytesOfRGBA(paletteIndex))
+                [...Array(bitmapBlockSize).keys()].map(
+                    (pixelIndex) => getBitmapColorIndex(this.bytes, pixelIndex)
+                ).flatMap((paletteIndex) => bytesOfRGBA(paletteIndex))
                 .map((raw) => createByte(raw))
             );
         }
