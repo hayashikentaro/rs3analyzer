@@ -137,16 +137,6 @@ const getBitmapColorIndex = (snes4bppBody :Byte[], bmpIdx :number) => {
         });
 }
 
-const getBitmapColorIndexes = (snes4bppBody :Byte[], blockIdx :number) => {
-    return [...Array(0x40).keys()].map((pixelIdx) => {
-        return getBitmapColorIndex(snes4bppBody, blockIdx * 0x40 + pixelIdx);
-    })
-}
-
-const getBitmapBodyAsBlock = (snes4bppBody :Byte[], blockIdx :number) => {
-    return getBitmapColorIndexes(snes4bppBody, blockIdx).flatMap(idx => getRGB(idx));
-}
-
 // 読み込み対象サイズ：0x520
 const toBMP = (buf :Byte[]) => {
     [...Array(36).keys()].map((idx) => {
