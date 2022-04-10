@@ -81,6 +81,7 @@ const bitmapHeaderOfBlock = () => {
 interface Bitmap {
     header: Byte[];
     body: Byte[];
+    toBuffer: () => ArrayBuffer;
     size: number;
     width: number;
     height: number;
@@ -91,6 +92,9 @@ const createBitmapOfBlock :(bytes :Byte[]) => Bitmap =
     return {
         header: bitmapHeaderOfBlock().map((byte => createByte(byte))),
         body: bytes,
+        toBuffer: function() :ArrayBuffer {
+            return new Uint8Array(this.header.concat(this.body).map((byte) => byte.value)).buffer;
+        },
         size: bytes.length,
         width: 8,
         height: 8,
@@ -137,13 +141,12 @@ const createSnes4bppBlock :(bytes :Byte[]) => Snes4bppBlock =
 // 読み込み対象サイズ：0x520
 const toBMP = (buf :Byte[]) => {
     [...Array(36).keys()].map((idx) => {
-        const bitmap = createSnes4bppBlock(buf.slice(idx * 0x20)).toBitMap();
-        let result = new Uint8Array(bitmap.header.length + bitmap.body.length);
-        result.set(bitmap.header.map((byte) => byte.value));
-        const dataView = new DataView(result.buffer);
-        result.set(bitmap.body.map((byte) => byte.value), bitmap.header.length);
-
-        fs.writeFile(`out/out${idx}.bmp`, dataView, (err) => {
+        fs.writeFile(`out/out${idx}.bmp`,
+          new DataView(
+            createSnes4bppBlock(
+              buf.slice(idx * 0x20)).toBitMap().toBuffer()
+          ),
+          (err) => {
             if (err) throw err;
             console.log('creating bmp files was succeeded!!');
         });
