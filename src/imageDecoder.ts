@@ -110,6 +110,20 @@ interface Snes4bppBlock {
 
 const createSnes4bppBlock :(bytes :Byte[]) => Snes4bppBlock =
   (bytes) => {
+    // r3pからビットマップ用のパレットインデックスを取り出す
+    const getBitmapColorIndex = (snes4bppBody :Byte[], bmpIdx :number) => {
+        const snes4bppReadOffset = (bitmapPixelIndex :number) => {
+          return ((bitmapBlockSize - 1 - (bitmapPixelIndex % bitmapBlockSize)) / bitPerByte | 0) * snes4bppNeighborByteNum;
+        }
+        return [ 0x00, 0x01, 0x10, 0x11 ]
+            .map(adr => snes4bppReadOffset(bmpIdx) + adr)
+            .map(adr => snes4bppBody[adr])
+            .map(byte => byte.bit(bmpIdx % bitPerByte))
+            .reduce((prv, bit, idx) => {
+                return prv + (bit << idx);
+            });
+    }
+
     return {
         bytes: bytes,
         toBitMap: function(): Bitmap {
@@ -121,20 +135,6 @@ const createSnes4bppBlock :(bytes :Byte[]) => Snes4bppBlock =
             );
         }
     }
-}
-
-// r3pからビットマップ用のパレットインデックスを取り出す
-const getBitmapColorIndex = (snes4bppBody :Byte[], bmpIdx :number) => {
-    const snes4bppReadOffset = (bitmapPixelIndex :number) => {
-        return ((bitmapBlockSize - 1 - (bitmapPixelIndex % bitmapBlockSize)) / bitPerByte | 0) * snes4bppNeighborByteNum;
-    }
-    return [ 0x00, 0x01, 0x10, 0x11 ]
-        .map(adr => snes4bppReadOffset(bmpIdx) + adr)
-        .map(adr => snes4bppBody[adr])
-        .map(byte => byte.bit(bmpIdx % bitPerByte))
-        .reduce((prv, bit, idx) => {
-            return prv + (bit << idx);
-        });
 }
 
 // 読み込み対象サイズ：0x520
