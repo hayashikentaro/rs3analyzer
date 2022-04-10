@@ -37,70 +37,70 @@ interface Bitmap {
     height: number;
 }
 
-const createBitmapOfBlock :(bytes :Byte[]) => Bitmap =
-  (bytes) => {
-      // TODO:
-      // @ts-ignore
-      const bitmapHeaderOfBlock = () => {
-          const headerSize = 0x36;
-          return [
-              // ファイルタイプ
-              0x42, 0x4D,
-              // TODO: ファイルサイズ
-              0x38,
-              0x01,
-              0x00,
-              0x00,
-              // 予約領域１
-              0x00, 0x00,
-              // 予約領域２
-              0x00, 0x00,
-              // ファイル先頭から画像データまでのオフセット
-              headerSize, 0x00, 0x00, 0x00,
-              // 情報ヘッダサイズ[byte]
-              0x28, 0x00, 0x00, 0x00,
-              // TODO: 画像の幅
-              0x08,
-              0x00,
-              0x00,
-              0x00,
-              // TODO: 画像の高さ
-              0x08,
-              0x00,
-              0x00,
-              0x00,
-              // プレーン数
-              0x01, 0x00,
-              // 色ビット数
-              0x20, 0x00,
-              // 圧縮形式
-              0x00, 0x00, 0x00, 0x00,
-              // TODO: 画像データサイズ
-              0x02,
-              0x01,
-              0x00,
-              0x00,
-              // 水平解像度
-              0x12, 0x0B, 0x00, 0x00,
-              // 垂直解像度
-              0x12, 0x0B, 0x00, 0x00,
-              // 格納パレット数
-              0x00, 0x00, 0x00, 0x00,
-              // 重要色数
-              0x00, 0x00, 0x00, 0x00,
-          ];
-      }
+const createBitmapOfBlock :(bytes :Byte[]) => Bitmap = (bytes) => {
+    // TODO:
+    // @ts-ignore
+    const bitmapHeaderOfBlock = () => {
+        const headerSize = 0x36;
 
-      return {
-          header: bitmapHeaderOfBlock().map((byte => createByte(byte))),
-          body: bytes,
-          toBuffer: function() :ArrayBuffer {
+        return [
+            // ファイルタイプ
+            0x42, 0x4D,
+            // TODO: ファイルサイズ
+            0x38,
+            0x01,
+            0x00,
+            0x00,
+            // 予約領域１
+            0x00, 0x00,
+            // 予約領域２
+            0x00, 0x00,
+            // ファイル先頭から画像データまでのオフセット
+            headerSize, 0x00, 0x00, 0x00,
+            // 情報ヘッダサイズ[byte]
+            0x28, 0x00, 0x00, 0x00,
+            // TODO: 画像の幅
+            0x08,
+            0x00,
+            0x00,
+            0x00,
+            // TODO: 画像の高さ
+            0x08,
+            0x00,
+            0x00,
+            0x00,
+            // プレーン数
+            0x01, 0x00,
+            // 色ビット数
+            0x20, 0x00,
+            // 圧縮形式
+            0x00, 0x00, 0x00, 0x00,
+            // TODO: 画像データサイズ
+            0x02,
+            0x01,
+            0x00,
+            0x00,
+            // 水平解像度
+            0x12, 0x0B, 0x00, 0x00,
+            // 垂直解像度
+            0x12, 0x0B, 0x00, 0x00,
+            // 格納パレット数
+            0x00, 0x00, 0x00, 0x00,
+            // 重要色数
+            0x00, 0x00, 0x00, 0x00,
+        ];
+    }
+
+    return {
+        header: bitmapHeaderOfBlock().map((byte => createByte(byte))),
+            body: bytes,
+            toBuffer: function() :ArrayBuffer {
               return new Uint8Array(this.header.concat(this.body).map((byte) => byte.value)).buffer;
-          },
-          size: bytes.length,
-          width: 8,
-          height: 8,
-      }
+            },
+            size: bytes.length,
+            width: 8,
+            height: 8,
+    }
 }
 
 interface Snes4bppBlock {
@@ -108,8 +108,7 @@ interface Snes4bppBlock {
     toBitMap: () => Bitmap;
 }
 
-const createSnes4bppBlock :(bytes :Byte[]) => Snes4bppBlock =
-  (bytes) => {
+const createSnes4bppBlock :(bytes :Byte[]) => Snes4bppBlock = (bytes) => {
     const bitmapBlockSize = 0x40;
     const snes4bppNeighborByteNum = 0x02;
     // r3pからビットマップ用のパレットインデックスを取り出す
@@ -144,14 +143,15 @@ const createSnes4bppBlock :(bytes :Byte[]) => Snes4bppBlock =
 const convertBitmap = (buf :Byte[]) => {
     [...Array(36).keys()].map((idx) => {
         fs.writeFile(`out/out${idx}.bmp`,
-          new DataView(
-            createSnes4bppBlock(
-              buf.slice(idx * 0x20)).toBitMap().toBuffer()
-          ),
-          (err) => {
-            if (err) throw err;
-            console.log('creating bmp files was succeeded!!');
-        });
+            new DataView(
+                createSnes4bppBlock(
+                  buf.slice(idx * 0x20)).toBitMap().toBuffer()
+              ),
+            (err) => {
+                if (err) throw err;
+                console.log('creating bmp files was succeeded!!');
+            }
+        );
     })
 }
 
