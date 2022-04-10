@@ -97,13 +97,27 @@ const bitmapHeaderOfBlock = () => {
 }
 
 // リトルエンディアン（小さい方から）
-const takeBit = (byte :number, digit: number) => {
+const takeBit: (byte :number, digit: number) => number = (byte, digit) => {
     return (byte >> (bitPerByte - 1 - digit)) & 0x01;
 }
 
 const snes4bppNeighborByteNum = 0x02;
 const bitmapBlockSize = 0x40;
 const snes4bppBlockSize = 0x20;
+
+interface Byte {
+    value: number;
+    bit: (index :number) => number;
+}
+
+const createByte: (byte: number) => Byte = (byte) => {
+    return {
+        value: byte & 0xFF,
+        bit: function(index: number): number {
+            return takeBit(this.value, index);
+        },
+    }
+}
 
 const snes4bppReadOffsetInBlock = (bitmapPixelIndex :number) => {
     return ((bitmapBlockSize - 1 - (bitmapPixelIndex % bitmapBlockSize)) / bitPerByte | 0) * snes4bppNeighborByteNum;
