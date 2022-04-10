@@ -2,8 +2,6 @@ import {dump} from "./util";
 import * as fs from 'fs';
 import {bitPerByte, Byte, createByte} from "./byte";
 
-const snes4bppBodyOffset = 0x0036;
-
 // TODO: 動的ロードに置換
 const getRGB = (paletteIndex :number) => {
     const alphaChannelByte = 0x00;
@@ -151,6 +149,9 @@ const toBMP = (buf :Byte[]) => {
     })
 }
 
-dump(snes4bppBodyOffset, toBMP);
+// TODO: r3pじゃなくなったら修正
+const r3pBodyOffset = 0x0036;
+
+dump(r3pBodyOffset, toBMP);
 
 
