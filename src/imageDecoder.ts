@@ -6,6 +6,7 @@ const snes4bppBodyOffset = 0x0036;
 const bitPerByte = 8;
 const alphaChannelByte = 0x00;
 
+// TODO: 動的ロードに置換
 const getRGB = (paletteIndex :number) => {
     // リトルエンディアンのため反転
     return [
