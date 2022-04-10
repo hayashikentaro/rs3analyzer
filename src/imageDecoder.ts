@@ -107,6 +107,21 @@ interface Snes4bppBlock {
     toBitMap: () => Bitmap;
 }
 
+const createSnes4bppBlock :(bytes :Byte[]) => Snes4bppBlock =
+  (bytes) => {
+    return {
+        bytes: bytes,
+        toBitMap: function(): Bitmap {
+            return createBitmapOfBlock(
+              [...Array(0x40).keys()].map(
+                (pixelIdx) => getBitmapColorIndex(this.bytes, pixelIdx)
+              ).flatMap((idx) => getRGB(idx))
+                .map((raw) => createByte(raw))
+            );
+        }
+    }
+}
+
 const snes4bppReadOffsetInBlock = (bitmapPixelIndex :number) => {
     return ((bitmapBlockSize - 1 - (bitmapPixelIndex % bitmapBlockSize)) / bitPerByte | 0) * snes4bppNeighborByteNum;
 }
