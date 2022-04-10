@@ -102,6 +102,7 @@ const createBitmapOfBlock :(bytes :Byte[]) => Bitmap =
         height: 8,
     }
 }
+
 interface Snes4bppBlock {
     bytes: Byte[];
     toBitMap: () => Bitmap;
@@ -158,12 +159,14 @@ const getBitmapBodyAsBlock = (snes4bppBody :Byte[], blockIdx :number) => {
 // 読み込み対象サイズ：0x520
 const toBMP = (buf :Byte[]) => {
     [...Array(36).keys()].map((idx) => {
-        const bytes = getBitmapBodyAsBlock(buf, idx);
-        const header = bitmapHeaderOfBlock();
-        let result = new Uint8Array(header.length + bytes.length);
-        result.set(header);
+        const bitmap = createSnes4bppBlock(buf.slice(idx * 0x20)).toBitMap();
+        let result = new Uint8Array(bitmap.header.length + bitmap.body.length);
+        result.set(bitmap.header.map((byte) => byte.value));
         const dataView = new DataView(result.buffer);
-        result.set(bytes, header.length);
+        result.set(bitmap.body.map((byte) => byte.value), bitmap.header.length);
+
+        // const dataView = new DataView(result.buffer);
+        // result.set(bytes, header.length);
 
         fs.writeFile(`out/out${idx}.bmp`, dataView, (err) => {
             if (err) throw err;
