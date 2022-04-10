@@ -139,7 +139,7 @@ const createSnes4bppBlock :(bytes :Byte[]) => Snes4bppBlock =
 }
 
 // 読み込み対象サイズ：0x520
-const toBMP = (buf :Byte[]) => {
+const convertBitmap = (buf :Byte[]) => {
     [...Array(36).keys()].map((idx) => {
         fs.writeFile(`out/out${idx}.bmp`,
           new DataView(
@@ -156,6 +156,6 @@ const toBMP = (buf :Byte[]) => {
 // TODO: r3pじゃなくなったら修正
 const r3pBodyOffset = 0x0036;
 
-dump(r3pBodyOffset, toBMP);
+dump(r3pBodyOffset, convertBitmap);
 
 
