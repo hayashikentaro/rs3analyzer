@@ -123,20 +123,11 @@ const createSnes4bppBlock :(bytes :Byte[]) => Snes4bppBlock =
     }
 }
 
-const snes4bppReadOffsetInBlock = (bitmapPixelIndex :number) => {
-    return ((bitmapBlockSize - 1 - (bitmapPixelIndex % bitmapBlockSize)) / bitPerByte | 0) * snes4bppNeighborByteNum;
-}
-
-const snes4bppBlockNo = (bitmapPixelIndex :number) => {
-    return ((bitmapPixelIndex / bitmapBlockSize) | 0);
-}
-
-const snes4bppReadOffset = (bitmapPixelIndex :number) => {
-    return snes4bppBlockNo(bitmapPixelIndex) * snes4bppBlockSize + snes4bppReadOffsetInBlock(bitmapPixelIndex);
-}
-
 // r3pからビットマップ用のパレットインデックスを取り出す
 const getBitmapColorIndex = (snes4bppBody :Byte[], bmpIdx :number) => {
+    const snes4bppReadOffset = (bitmapPixelIndex :number) => {
+        return ((bitmapBlockSize - 1 - (bitmapPixelIndex % bitmapBlockSize)) / bitPerByte | 0) * snes4bppNeighborByteNum;
+    }
     return [ 0x00, 0x01, 0x10, 0x11 ]
         .map(adr => snes4bppReadOffset(bmpIdx) + adr)
         .map(adr => snes4bppBody[adr])
