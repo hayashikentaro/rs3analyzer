@@ -143,8 +143,8 @@ const convertBitmap = (buf :Byte[]) => {
         fs.writeFile(`out/out${idx}.bmp`,
             new DataView(
                 createSnes4bppBlock(
-                  buf.slice(idx * 0x20)).toBitMap().toBuffer()
-              ),
+                    buf.slice(idx * 0x20, (idx + 1) * 0x20)
+                ).toBitMap().toBuffer()),
             (err) => {
                 if (err) throw err;
                 console.log('creating bmp files was succeeded!!');
