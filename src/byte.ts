@@ -19,3 +19,7 @@ export const createByte: (raw: number) => Byte = (raw) => {
 const takeBit: (byte :number, digit: number) => number = (byte, digit) => {
   return (byte >> (bitPerByte - 1 - digit)) & 0x01;
 }
+
+export const bytesToBuffer :(bytes :Byte[]) => ArrayBuffer = (bytes) => {
+  return new Uint8Array(bytes.map((byte) => byte.value)).buffer;
+}

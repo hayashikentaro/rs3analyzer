@@ -1,4 +1,4 @@
-import {dump} from "./util";
+import {dump, writeFile} from "./util";
 import * as fs from 'fs';
 import {bitPerByte, Byte, createByte} from "./byte";
 
@@ -29,7 +29,7 @@ const bytesOfRGBA = (paletteIndex :number) => {
 interface Bitmap {
     header: Byte[];
     body: Byte[];
-    toBuffer: () => ArrayBuffer;
+    bytes: Byte[];
     size: number;
     width: number;
     height: number;
@@ -89,15 +89,14 @@ const createBitmapOfBlock :(bytes :Byte[]) => Bitmap = (bytes) => {
         ];
     }
 
+    const header = bitmapHeaderOfBlock().map((byte => createByte(byte)));
     return {
-        header: bitmapHeaderOfBlock().map((byte => createByte(byte))),
-            body: bytes,
-            toBuffer: function() :ArrayBuffer {
-              return new Uint8Array(this.header.concat(this.body).map((byte) => byte.value)).buffer;
-            },
-            size: bytes.length,
-            width: 8,
-            height: 8,
+        header: header,
+        body: bytes,
+        bytes: header.concat(bytes),
+        size: bytes.length,
+        width: 8,
+        height: 8,
     }
 }
 
@@ -140,17 +139,12 @@ const createSnes4bppBlock :(bytes :Byte[]) => Snes4bppBlock = (bytes) => {
 // 読み込み対象サイズ：0x520
 const convertBitmap = (buf :Byte[]) => {
     [...Array(36).keys()].map((idx) => {
-        fs.writeFile(`out/out${idx}.bmp`,
-            new DataView(
-                createSnes4bppBlock(
-                    buf.slice(idx * 0x20, (idx + 1) * 0x20)
-                ).toBitMap().toBuffer()),
-            (err) => {
-                if (err) throw err;
-                console.log('creating bmp files was succeeded!!');
-            }
-        );
-    })
+        writeFile(`out/out${idx}.bmp`,
+            createSnes4bppBlock(
+                buf.slice(idx * 0x20, (idx + 1) * 0x20)
+            ).toBitMap().bytes
+        )
+    });
 }
 
 // TODO: r3pじゃなくなったら修正
