@@ -136,7 +136,7 @@ const getBitmapColorIndex = (snes4bppBody :number[], bmpIdx :number) => {
     return [ 0x00, 0x01, 0x10, 0x11 ]
         .map(adr => snes4bppReadOffset(bmpIdx) + adr)
         .map(adr => snes4bppBody[adr])
-        .map(byte => takeBit(byte, bmpIdx % bitPerByte))
+        .map(byte => createByte(byte).bit(bmpIdx % bitPerByte))
         .reduce((prv, bit, idx) => {
             return prv + (bit << idx);
         });
