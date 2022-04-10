@@ -1,6 +1,6 @@
 import {dump, writeFile} from "./util";
 import * as fs from 'fs';
-import {bitPerByte, Byte, ByteArray, createByte} from "./byte";
+import {bitPerByte, Byte, createByte} from "./byte";
 
 // TODO: 動的ロードに置換
 const bytesOfRGBA = (paletteIndex :number) => {
@@ -35,7 +35,7 @@ interface Bitmap {
     height: number;
 }
 
-const createBitmapOfBlock :(bytes :ByteArray) => Bitmap = (bytes) => {
+const createBitmapOfBlock :(bytes :Byte[]) => Bitmap = (bytes) => {
     // TODO:
     // @ts-ignore
     const bitmapHeaderOfBlock = () => {
@@ -105,7 +105,7 @@ interface Snes4bppBlock {
     toBitMap: () => Bitmap;
 }
 
-const createSnes4bppBlock :(bytes :ByteArray) => Snes4bppBlock = (bytes) => {
+const createSnes4bppBlock :(bytes :Byte[]) => Snes4bppBlock = (bytes) => {
     const bitmapBlockSize = 0x40;
     const snes4bppNeighborByteNum = 0x02;
     // r3pからビットマップ用のパレットインデックスを取り出す
@@ -137,7 +137,7 @@ const createSnes4bppBlock :(bytes :ByteArray) => Snes4bppBlock = (bytes) => {
 }
 
 // 読み込み対象サイズ：0x520
-const convertBitmap = (buf :ByteArray) => {
+const convertBitmap = (buf :Byte[]) => {
     [...Array(36).keys()].map((idx) => {
         writeFile(`out/out${idx}.bmp`,
             createSnes4bppBlock(
