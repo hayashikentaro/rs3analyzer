@@ -80,9 +80,6 @@ const bitmapHeaderOfBlock = () => {
     ];
 }
 
-const snes4bppNeighborByteNum = 0x02;
-const bitmapBlockSize = 0x40;
-
 interface Bitmap {
     header: Byte[];
     body: Byte[];
@@ -109,6 +106,8 @@ interface Snes4bppBlock {
 
 const createSnes4bppBlock :(bytes :Byte[]) => Snes4bppBlock =
   (bytes) => {
+    const bitmapBlockSize = 0x40;
+    const snes4bppNeighborByteNum = 0x02;
     // r3pからビットマップ用のパレットインデックスを取り出す
     const getBitmapColorIndex = (snes4bppBody :Byte[], bmpIdx :number) => {
         const snes4bppReadOffset = (bitmapPixelIndex :number) => {
