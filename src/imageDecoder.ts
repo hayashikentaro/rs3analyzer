@@ -1,9 +1,9 @@
 import {dump} from "./util";
 import * as fs from 'fs';
+import {bitPerByte, Byte, createByte} from "./byte";
 
 const snes4bppSize = 0x0520;
 const snes4bppBodyOffset = 0x0036;
-const bitPerByte = 8;
 const alphaChannelByte = 0x00;
 
 // TODO: 動的ロードに置換
@@ -80,28 +80,9 @@ const bitmapHeaderOfBlock = () => {
     ];
 }
 
-// リトルエンディアン（小さい方から）
-const takeBit: (byte :number, digit: number) => number = (byte, digit) => {
-    return (byte >> (bitPerByte - 1 - digit)) & 0x01;
-}
-
 const snes4bppNeighborByteNum = 0x02;
 const bitmapBlockSize = 0x40;
 const snes4bppBlockSize = 0x20;
-
-interface Byte {
-    value: number;
-    bit: (index :number) => number;
-}
-
-const createByte: (byte: number) => Byte = (byte) => {
-    return {
-        value: byte & 0xFF,
-        bit: function(index: number): number {
-            return takeBit(this.value, index);
-        },
-    }
-}
 
 interface Bitmap {
     header: Byte[];
@@ -139,28 +120,28 @@ const snes4bppReadOffset = (bitmapPixelIndex :number) => {
 }
 
 // r3pからビットマップ用のパレットインデックスを取り出す
-const getBitmapColorIndex = (snes4bppBody :number[], bmpIdx :number) => {
+const getBitmapColorIndex = (snes4bppBody :Byte[], bmpIdx :number) => {
     return [ 0x00, 0x01, 0x10, 0x11 ]
         .map(adr => snes4bppReadOffset(bmpIdx) + adr)
         .map(adr => snes4bppBody[adr])
-        .map(byte => createByte(byte).bit(bmpIdx % bitPerByte))
+        .map(byte => byte.bit(bmpIdx % bitPerByte))
         .reduce((prv, bit, idx) => {
             return prv + (bit << idx);
         });
 }
 
-const getBitmapColorIndexes = (snes4bppBody :number[], blockIdx :number) => {
+const getBitmapColorIndexes = (snes4bppBody :Byte[], blockIdx :number) => {
     return [...Array(0x40).keys()].map((pixelIdx) => {
         return getBitmapColorIndex(snes4bppBody, blockIdx * 0x40 + pixelIdx);
     })
 }
 
-const getBitmapBodyAsBlock = (snes4bppBody :number[], blockIdx :number) => {
+const getBitmapBodyAsBlock = (snes4bppBody :Byte[], blockIdx :number) => {
     return getBitmapColorIndexes(snes4bppBody, blockIdx).flatMap(idx => getRGB(idx));
 }
 
 // 読み込み対象サイズ：0x520
-const toBMP = (buf :number[]) => {
+const toBMP = (buf :Byte[]) => {
     [...Array(36).keys()].map((idx) => {
         const bytes = getBitmapBodyAsBlock(buf, idx);
         const header = bitmapHeaderOfBlock();
@@ -176,6 +157,6 @@ const toBMP = (buf :number[]) => {
     })
 }
 
-dump({offset: snes4bppBodyOffset, converter: toBMP});
+dump(snes4bppBodyOffset, toBMP);
 
 
