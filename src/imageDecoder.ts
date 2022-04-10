@@ -115,6 +115,7 @@ const createSnes4bppBlock :(bytes :Byte[]) => Snes4bppBlock =
         const snes4bppReadOffset = (bitmapPixelIndex :number) => {
           return ((bitmapBlockSize - 1 - (bitmapPixelIndex % bitmapBlockSize)) / bitPerByte | 0) * snes4bppNeighborByteNum;
         }
+
         return [ 0x00, 0x01, 0x10, 0x11 ]
             .map(adr => snes4bppReadOffset(bmpIdx) + adr)
             .map(adr => snes4bppBody[adr])
