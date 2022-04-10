@@ -2,7 +2,6 @@ import {dump} from "./util";
 import * as fs from 'fs';
 import {bitPerByte, Byte, createByte} from "./byte";
 
-const snes4bppSize = 0x0520;
 const snes4bppBodyOffset = 0x0036;
 const alphaChannelByte = 0x00;
 
