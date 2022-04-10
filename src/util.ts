@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import {Byte, bytesToBuffer, createByte} from "./byte";
+import {Byte, createByte} from "./byte";
 
 export const dump: (offset :number, converter :(buf: Byte[]) => void) => void =
   (offset, converter) => {
@@ -8,10 +8,10 @@ export const dump: (offset :number, converter :(buf: Byte[]) => void) => void =
     });
 }
 
-export const writeFile: (fileName: string, bytes: Byte[]) => void = (fileName, bytes) => {
+export const writeFile: (fileName: string, buffer: ArrayBuffer) => void = (fileName, buffer) => {
     fs.writeFile(
         fileName,
-        new DataView(bytesToBuffer(bytes)),
+        new DataView(buffer),
         (err) => {
             if (err) throw err;
             console.log('creating bmp files was succeeded!!');
