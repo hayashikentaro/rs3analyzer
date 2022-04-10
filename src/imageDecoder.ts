@@ -26,8 +26,6 @@ const getRGB = (paletteIndex :number) => {
     ][paletteIndex].reverse().concat(alphaChannelByte);
 }
 
-
-
 interface Bitmap {
     header: Byte[];
     body: Byte[];
