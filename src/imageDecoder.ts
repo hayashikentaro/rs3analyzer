@@ -35,7 +35,8 @@ interface Bitmap {
     height: number;
 }
 
-const createBitmapOfBlock :(bytes :Byte[]) => Bitmap = (bytes) => {
+const createBitmap :(params: { bytes :Byte[], width :number, height :number }) => Bitmap
+    = (params) => {
     const bitmapHeaderOfBlock = (params: { width :number, height :number}) => {
         const headerSize = 0x36;
         const bytePerPixel = 4;
@@ -80,17 +81,20 @@ const createBitmapOfBlock :(bytes :Byte[]) => Bitmap = (bytes) => {
         ];
     }
 
-    const header = bitmapHeaderOfBlock({ width: 8, height: 8 }).map((byte => createByte(byte)));
+    const header = bitmapHeaderOfBlock(params).map((byte => createByte(byte)));
     return {
         header: header,
-        body: bytes,
-        bytes: header.concat(bytes),
-        buffer: new Uint8Array(header.concat(bytes).map((byte) => byte.value)).buffer,
-        size: bytes.length,
+        body: params.bytes,
+        bytes: header.concat(params.bytes),
+        buffer: new Uint8Array(header.concat(params.bytes).map((byte) => byte.value)).buffer,
+        size: params.bytes.length,
         width: 8,
         height: 8,
     }
 }
+
+const createBitmapOfBlock :(bytes :Byte[]) => Bitmap = (bytes) =>
+    createBitmap( {bytes: bytes, width: 8, height: 8 });
 
 interface Snes4bppBlock {
     bytes: Byte[];
