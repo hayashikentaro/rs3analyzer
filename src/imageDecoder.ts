@@ -94,7 +94,7 @@ const createBitmap :(params: { bytes :Byte[], width :number, height :number }) =
 }
 
 const createBitmapOfBlock :(bytes :Byte[]) => Bitmap = (bytes) =>
-    createBitmap( {bytes: bytes, width: 8, height: 8 });
+    createBitmap( { bytes: bytes, width: 8, height: 8 });
 
 interface Snes4bppBlock {
     bytes: Byte[];
