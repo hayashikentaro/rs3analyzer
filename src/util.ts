@@ -8,10 +8,10 @@ export const dump: (offset :number, converter :(buf: Byte[]) => void) => void =
       });
 }
 
-export const writeFile: (fileName: string, buffer: ArrayBuffer) => void = (fileName, buffer) => {
+export const writeFile: (fileName: string, bytes: number[]) => void = (fileName, bytes) => {
     fs.writeFile(
         fileName,
-        new DataView(buffer),
+        new DataView(new Uint8Array((bytes.map((byte) => byte))).buffer),
         (err) => {
             if (err) throw err;
             console.log('creating bmp files was succeeded!!');

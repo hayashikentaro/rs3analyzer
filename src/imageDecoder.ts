@@ -29,7 +29,6 @@ interface Bitmap {
     header: Byte[];
     body: Byte[];
     bytes: Byte[];
-    buffer: ArrayBuffer;
     size: number;
     width: number;
     height: number;
@@ -86,7 +85,6 @@ const createBitmap :(params: { bytes :Byte[], width :number, height :number }) =
         header: header,
         body: params.bytes,
         bytes: header.concat(params.bytes),
-        buffer: new Uint8Array(header.concat(params.bytes).map((byte) => byte.value)).buffer,
         size: params.bytes.length,
         width: params.width,
         height: params.height,
@@ -140,7 +138,7 @@ const convertBitmap = (buf :Byte[]) => {
         writeFile(`out/out${idx}.bmp`,
             createSnes4bppBlock(
                 buf.slice(idx * 0x20, (idx + 1) * 0x20)
-            ).toBitMap().buffer
+            ).toBitMap().bytes.map((byte) => byte.value)
         )
     });
 }
