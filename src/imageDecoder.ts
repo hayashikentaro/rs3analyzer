@@ -37,12 +37,10 @@ interface Bitmap {
 }
 
 const createBitmapOfBlock :(bytes :Byte[]) => Bitmap = (bytes) => {
-    // TODO:
-    // @ts-ignore
-    const bitmapHeaderOfBlock = ({ width, height }) => {
+    const bitmapHeaderOfBlock = (params: { width :number, height :number}) => {
         const headerSize = 0x36;
         const bytePerPixel = 4;
-        const bodySize = width * height * bytePerPixel;
+        const bodySize = params.width * params.height * bytePerPixel;
         const Uint32ToBytes :(uint32 :number) => number[] = (uint32) => {
             return [...Array(4).keys()].map((idx) => (uint32 >> idx) & 0xFF)
         }
@@ -61,9 +59,9 @@ const createBitmapOfBlock :(bytes :Byte[]) => Bitmap = (bytes) => {
             // 情報ヘッダサイズ[byte]
             0x28, 0x00, 0x00, 0x00,
             // 画像の幅
-            width, 0x00, 0x00, 0x00,
+            params.width, 0x00, 0x00, 0x00,
             // 画像の高さ
-            height, 0x00, 0x00, 0x00,
+            params.height, 0x00, 0x00, 0x00,
             // プレーン数
             0x01, 0x00,
             // 色ビット数
