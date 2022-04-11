@@ -41,6 +41,11 @@ const createBitmapOfBlock :(bytes :Byte[]) => Bitmap = (bytes) => {
     // @ts-ignore
     const bitmapHeaderOfBlock = ({ width, height }) => {
         const headerSize = 0x36;
+        const bytePerPixel = 4;
+        const bodySize = width * height * bytePerPixel;
+        const Uint32ToBytes :(uint32 :number) => number[] = (uint32) => {
+            return [...Array(4).keys()].map((idx) => (uint32 >> idx) & 0xFF)
+        }
 
         return [
             // ファイルタイプ
@@ -68,11 +73,8 @@ const createBitmapOfBlock :(bytes :Byte[]) => Bitmap = (bytes) => {
             0x20, 0x00,
             // 圧縮形式
             0x00, 0x00, 0x00, 0x00,
-            // TODO: 画像データサイズ
-            0x02,
-            0x01,
-            0x00,
-            0x00,
+            // 画像データサイズ
+            ...Uint32ToBytes(bodySize),
             // 水平解像度
             0x12, 0x0B, 0x00, 0x00,
             // 垂直解像度
