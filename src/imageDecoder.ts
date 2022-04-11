@@ -1,5 +1,4 @@
 import {dump, writeFile} from "./util";
-import * as fs from 'fs';
 import {bitPerByte, Byte, createByte} from "./byte";
 
 // TODO: 動的ロードに置換
