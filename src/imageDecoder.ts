@@ -88,8 +88,8 @@ const createBitmap :(params: { bytes :Byte[], width :number, height :number }) =
         bytes: header.concat(params.bytes),
         buffer: new Uint8Array(header.concat(params.bytes).map((byte) => byte.value)).buffer,
         size: params.bytes.length,
-        width: 8,
-        height: 8,
+        width: params.width,
+        height: params.height,
     }
 }
 
