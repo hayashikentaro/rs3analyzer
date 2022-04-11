@@ -3,7 +3,7 @@ import {Byte, createByte} from "./byte";
 
 export const dump: (offset :number, converter :(buf: Byte[]) => void) => void =
   (offset, converter) => {
-      fs.readFile('in', (err, content) => {
+      fs.readFile('in/r3p', (err, content) => {
           converter(Array.from(content).slice(offset).map((num) => createByte(num)));
       });
 }
