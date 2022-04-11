@@ -133,11 +133,11 @@ const createSnes4bppBlock :(bytes :Byte[]) => Snes4bppBlock = (bytes) => {
 }
 
 // 読み込み対象サイズ：0x520
-const convertBitmap = (buf :Byte[]) => {
+const convertBitmap = (buf :number[]) => {
     [...Array(36).keys()].map((idx) => {
         writeFile(`out/out${idx}.bmp`,
             createSnes4bppBlock(
-                buf.slice(idx * 0x20, (idx + 1) * 0x20)
+                buf.slice(idx * 0x20, (idx + 1) * 0x20).map((byte) => createByte(byte))
             ).toBitMap().bytes.map((byte) => byte.value)
         )
     });
