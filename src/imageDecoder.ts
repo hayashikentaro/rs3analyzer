@@ -39,7 +39,7 @@ interface Bitmap {
 const createBitmapOfBlock :(bytes :Byte[]) => Bitmap = (bytes) => {
     // TODO:
     // @ts-ignore
-    const bitmapHeaderOfBlock = () => {
+    const bitmapHeaderOfBlock = ({ width, height }) => {
         const headerSize = 0x36;
 
         return [
@@ -58,16 +58,10 @@ const createBitmapOfBlock :(bytes :Byte[]) => Bitmap = (bytes) => {
             headerSize, 0x00, 0x00, 0x00,
             // 情報ヘッダサイズ[byte]
             0x28, 0x00, 0x00, 0x00,
-            // TODO: 画像の幅
-            0x08,
-            0x00,
-            0x00,
-            0x00,
-            // TODO: 画像の高さ
-            0x08,
-            0x00,
-            0x00,
-            0x00,
+            // 画像の幅
+            width, 0x00, 0x00, 0x00,
+            // 画像の高さ
+            height, 0x00, 0x00, 0x00,
             // プレーン数
             0x01, 0x00,
             // 色ビット数
@@ -90,7 +84,7 @@ const createBitmapOfBlock :(bytes :Byte[]) => Bitmap = (bytes) => {
         ];
     }
 
-    const header = bitmapHeaderOfBlock().map((byte => createByte(byte)));
+    const header = bitmapHeaderOfBlock({ width: 8, height: 8 }).map((byte => createByte(byte)));
     return {
         header: header,
         body: bytes,
