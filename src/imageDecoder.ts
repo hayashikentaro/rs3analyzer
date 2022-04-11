@@ -50,11 +50,8 @@ const createBitmapOfBlock :(bytes :Byte[]) => Bitmap = (bytes) => {
         return [
             // ファイルタイプ
             0x42, 0x4D,
-            // TODO: ファイルサイズ
-            0x38,
-            0x01,
-            0x00,
-            0x00,
+            // ファイルサイズ
+            ...Uint32ToBytes(headerSize + bodySize),
             // 予約領域１
             0x00, 0x00,
             // 予約領域２
