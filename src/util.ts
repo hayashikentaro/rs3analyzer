@@ -19,6 +19,7 @@ export const writeFile: (fileName: string, bytes: number[]) => void = (fileName,
     );
 }
 
+// TODO: 出力隠蔽、型が違っても統一
 export const writeFileString: (fileName: string, bytes: string[]) => void = (fileName, bytes) => {
     fs.writeFile(
         fileName,
