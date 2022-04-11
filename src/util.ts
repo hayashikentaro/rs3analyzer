@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import {Byte, createByte} from "./byte";
 
-export const dump: (offset :number, converter :(buf: number[]) => void) => void =
-  (offset, converter) => {
-      fs.readFile('in/r3p', (err, content) => {
+export const dump: (readFile :string, offset :number, converter :(buf: number[]) => void) => void =
+  (readFile, offset, converter) => {
+      fs.readFile(readFile, (err, content) => {
           converter(Array.from(content).slice(offset));
       });
 }
@@ -12,6 +12,17 @@ export const writeFile: (fileName: string, bytes: number[]) => void = (fileName,
     fs.writeFile(
         fileName,
         new DataView(new Uint8Array((bytes.map((byte) => byte))).buffer),
+        (err) => {
+            if (err) throw err;
+            console.log('creating bmp files was succeeded!!');
+        }
+    );
+}
+
+export const writeFileString: (fileName: string, bytes: string[]) => void = (fileName, bytes) => {
+    fs.writeFile(
+        fileName,
+        bytes.reduce((prv, byte) => prv + byte, ""),
         (err) => {
             if (err) throw err;
             console.log('creating bmp files was succeeded!!');

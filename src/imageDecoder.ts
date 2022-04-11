@@ -146,6 +146,4 @@ const convertBitmap = (buf :number[]) => {
 // TODO: r3pじゃなくなったら修正
 const r3pBodyOffset = 0x0036;
 
-dump(r3pBodyOffset, convertBitmap);
-
-
+dump('in/r3p', r3pBodyOffset, convertBitmap);
