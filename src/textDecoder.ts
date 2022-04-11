@@ -1,7 +1,8 @@
-import {dumpEveryByte} from "./util.ts";
+import {dump, writeFile, writeFileString} from "./util";
 
 /* ロマンシング サ・ガ3の文字コード表(シングルバイト) */
-const getChar = (buf, bufIndex) => {
+const getChar :(buf :number[], bufIndex :number) => string
+    = (buf, bufIndex) => {
     if (buf[bufIndex - 1] < 36) return "";
     if (buf[bufIndex] === 32) {
         return [
@@ -105,6 +106,9 @@ const getChar = (buf, bufIndex) => {
     }
 }
 
-const offset = 0x3d0000;
-
-dumpEveryByte({offset: offset, size: 10, converter: getChar});
+dump("in/rom", 0x00, (buf :number[]) => {
+    writeFileString(
+        "out/rs3all.txt",
+        [...Array(buf.length).keys()].map((idx) => getChar(buf, idx))
+    );
+});
